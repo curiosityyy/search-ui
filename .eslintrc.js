@@ -2,8 +2,7 @@ module.exports = {
   env: {
     node: true,
     browser: true,
-    commonjs: true,
-    es2021: true
+    commonjs: true
   },
   extends: [
     "eslint:recommended",
@@ -12,6 +11,7 @@ module.exports = {
     "prettier"
   ],
   parserOptions: {
+    ecmaVersion: 2021,
     ecmaFeatures: {
       jsx: true
     },
