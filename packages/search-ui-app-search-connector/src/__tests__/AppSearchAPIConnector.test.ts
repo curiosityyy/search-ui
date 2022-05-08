@@ -78,7 +78,8 @@ const resultState = {
 const params: AppSearchAPIConnectorParams = {
   engineName: "some-engine",
   hostIdentifier: "host-XXXX",
-  searchKey: "search-XXXXX"
+  username: "xxxx",
+  password: "xxxx"
 };
 
 beforeEach(() => {
@@ -116,7 +117,8 @@ describe("AppSearchAPIConnector", () => {
   it("can be initialized with endpointBase", () => {
     const params = {
       engineName: "some-engine",
-      searchKey: "search-XXXXX",
+      username: "xxxx",
+      password: "xxxx",
       endpointBase: "http://localhost:3001"
     };
 

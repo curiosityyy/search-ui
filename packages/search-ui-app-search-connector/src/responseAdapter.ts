@@ -62,17 +62,20 @@ function limitTo100pages(totalPages: number): number {
 
 export function adaptResponse(response, options = {}) {
   const facets = response.info.facets;
-  const requestId = response.info.meta.request_id;
+  // const requestId = response.info.meta.request_id;
+  const requestId = "xxx";
 
-  const totalPages =
-    response.info.meta.page &&
-    typeof response.info.meta.page.total_pages !== "undefined"
-      ? limitTo100pages(response.info.meta.page.total_pages)
-      : undefined;
+  const totalPages = 3;
+  // const totalPages =
+  //   response.info.meta.page &&
+  //   typeof response.info.meta.page.total_pages !== "undefined"
+  //     ? limitTo100pages(response.info.meta.page.total_pages)
+  //     : undefined;
 
-  const totalResults = response.info.meta.page
-    ? response.info.meta.page.total_results
-    : undefined;
+  const totalResults = 60;
+  // const totalResults = response.info.meta.page
+  //   ? response.info.meta.page.total_results
+  //   : undefined;
 
   return {
     ...(facets && { facets: adaptFacets(facets, options) }),

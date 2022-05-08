@@ -1,5 +1,5 @@
-import * as ElasticAppSearch from "@elastic/app-search-javascript";
 
+import * as ElasticAppSearch from "@elastic/app-search-javascript";
 import { adaptResponse } from "./responseAdapter";
 import { adaptRequest } from "./requestAdapters";
 import buildResponseAdapterOptions from "./buildResponseAdapterOptions";
@@ -13,7 +13,8 @@ import type {
 } from "@elastic/search-ui";
 
 interface AppSearchAPIConnectorParamsBase {
-  searchKey?: string;
+  username: string;
+  password: string;
   engineName: string;
   beforeSearchCall?: SearchQueryHook;
   beforeAutocompleteResultsCall?: SearchQueryHook;
@@ -96,7 +97,8 @@ class AppSearchAPIConnector implements APIConnector {
    * @param {Options} options
    */
   constructor({
-    searchKey,
+    username,
+    password,
     engineName,
     beforeSearchCall = (queryOptions, next) => next(queryOptions),
     beforeAutocompleteResultsCall = (queryOptions, next) => next(queryOptions),
@@ -113,7 +115,8 @@ class AppSearchAPIConnector implements APIConnector {
     this.client = ElasticAppSearch.createClient({
       ...("endpointBase" in rest && { endpointBase: rest.endpointBase }), //Add property on condition
       ...("hostIdentifier" in rest && { hostIdentifier: rest.hostIdentifier }),
-      apiKey: searchKey,
+      username: username,
+      password: password,
       engineName: engineName,
       ...rest
     });

@@ -37,9 +37,10 @@ export class ResultsContainer extends Component<ResultsContainerProps> {
     const View = view || Results;
     const ResultView = resultView || Result;
 
+    console.log(results);
     const children = results.map((result) => (
       <ResultContainer
-        key={`result-${getRaw(result, "id")}`}
+        key={`result-${result["_id"]}`}
         titleField={titleField}
         urlField={urlField}
         thumbnailField={thumbnailField}

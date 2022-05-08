@@ -69,10 +69,8 @@ export function adaptRequest(request: RequestState) {
   return {
     query: searchTerm,
     ...(sort !== undefined && { sort }),
-    page: {
-      ...(resultsPerPage !== undefined && { size: resultsPerPage }),
-      ...(current !== undefined && { current })
-    },
+    ...(current !== undefined && { from: current }),
+    ...(resultsPerPage !== undefined && { size: resultsPerPage * 3 }),
     filters: adaptFilters(request.filters)
   };
 }

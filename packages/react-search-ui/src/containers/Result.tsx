@@ -41,7 +41,7 @@ export class ResultContainer extends Component<ResultContainerProps> {
       ...rest
     } = this.props;
     const View = view || Result;
-    const id = result.id.raw;
+    const id = result._id.raw;
 
     const viewProps: ResultViewProps = {
       className,
