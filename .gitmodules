@@ -1,3 +1,3 @@
-[submodule "packages/app-search-javascrip"]
-	path = packages/app-search-javascrip
+[submodule "packages/app-search-javascript"]
+	path = packages/app-search-javascript
 	url = https://github.com/curiosityyy/app-search-javascript
