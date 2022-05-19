@@ -27,11 +27,10 @@ import "@elastic/react-search-ui-views/lib/styles/styles.css";
 
 const connector = new AppSearchAPIConnector({
   searchKey:
-    process.env.REACT_APP_SEARCH_KEY || "search-nyxkw1fuqex9qjhfvatbqfmw",
-  engineName: process.env.REACT_APP_SEARCH_ENGINE_NAME || "national-parks",
+    process.env.REACT_APP_SEARCH_KEY || "PRIVATE_KEY",
+  engineName: process.env.REACT_APP_SEARCH_ENGINE_NAME || "twitter-demo",
   endpointBase:
-    process.env.REACT_APP_SEARCH_ENDPOINT_BASE ||
-    "https://search-ui-sandbox.ent.us-central1.gcp.cloud.es.io"
+    process.env.REACT_APP_SEARCH_ENDPOINT_BASE || "http://localhost:3002"
 });
 
 const config = {
@@ -41,80 +40,33 @@ const config = {
   hasA11yNotifications: true,
   searchQuery: {
     result_fields: {
-      visitors: { raw: {} },
-      world_heritage_site: { raw: {} },
-      location: { raw: {} },
-      acres: { raw: {} },
-      square_km: { raw: {} },
-      title: {
-        snippet: {
-          size: 100,
-          fallback: true
-        }
-      },
-      nps_link: { raw: {} },
-      states: { raw: {} },
-      date_established: { raw: {} },
-      image_url: { raw: {} },
-      description: {
-        snippet: {
-          size: 100,
-          fallback: true
-        }
-      }
+      url: { raw: {} },
+      text: { raw: {} },
+      like_count: { raw: {} },
+      reply_count: { raw: {} },
+      retweet_count: { raw: {} },
+      index: { raw: {} },
+      created_at: { raw: {} }
     },
-    disjunctiveFacets: ["acres", "states", "date_established", "location"],
+    disjunctiveFacets: ["index"],
     facets: {
-      world_heritage_site: { type: "value" },
-      states: { type: "value", size: 30 },
-      acres: {
-        type: "range",
-        ranges: [
-          { from: -1, name: "Any" },
-          { from: 0, to: 1000, name: "Small" },
-          { from: 1001, to: 100000, name: "Medium" },
-          { from: 100001, name: "Large" }
-        ]
-      },
-      location: {
-        // San Francisco. In the future, make this the user's current position
-        center: "37.7749, -122.4194",
-        type: "range",
-        unit: "mi",
-        ranges: [
-          { from: 0, to: 100, name: "Nearby" },
-          { from: 100, to: 500, name: "A longer drive" },
-          { from: 500, name: "Perhaps fly?" }
-        ]
-      },
-      date_established: {
+      index: { type: "value" },
+      created_at: {
         type: "range",
         ranges: [
           {
-            from: moment().subtract(50, "years").toISOString(),
-            name: "Within the last 50 years"
+            from: moment().subtract(5, "days").toISOString(),
+            name: "Within the last 5 days"
           },
           {
-            from: moment().subtract(100, "years").toISOString(),
-            to: moment().subtract(50, "years").toISOString(),
-            name: "50 - 100 years ago"
+            from: moment().subtract(5, "days").toISOString(),
+            to: moment().subtract(10, "days").toISOString(),
+            name: "5 - 10 days ago"
           },
           {
-            to: moment().subtract(100, "years").toISOString(),
-            name: "More than 100 years ago"
+            to: moment().subtract(10, "days").toISOString(),
+            name: "More than 10 days ago"
           }
-        ]
-      },
-      visitors: {
-        type: "range",
-        ranges: [
-          { from: 0, to: 10000, name: "0 - 10000" },
-          { from: 10001, to: 100000, name: "10001 - 100000" },
-          { from: 100001, to: 500000, name: "100001 - 500000" },
-          { from: 500001, to: 1000000, name: "500001 - 1000000" },
-          { from: 1000001, to: 5000000, name: "1000001 - 5000000" },
-          { from: 5000001, to: 10000000, name: "5000001 - 10000000" },
-          { from: 10000001, name: "10000001+" }
         ]
       }
     }
@@ -123,13 +75,13 @@ const config = {
     results: {
       resultsPerPage: 5,
       result_fields: {
-        title: {
+        text: {
           snippet: {
             size: 100,
             fallback: true
           }
         },
-        nps_link: {
+        url: {
           raw: {}
         }
       }
@@ -137,7 +89,7 @@ const config = {
     suggestions: {
       types: {
         documents: {
-          fields: ["title"]
+          fields: ["text"]
         }
       },
       size: 4
@@ -151,50 +103,29 @@ const SORT_OPTIONS = [
     value: []
   },
   {
-    name: "Title",
+    name: "Date",
     value: [
       {
-        field: "title",
-        direction: "asc"
+        field: "created_at",
+        direction: "desc"
       }
     ]
   },
   {
-    name: "State",
+    name: "Like",
     value: [
       {
-        field: "states",
-        direction: "asc"
+        field: "like_count",
+        direction: "desc"
       }
     ]
   },
   {
-    name: "State -> Title",
+    name: "Retweet",
     value: [
       {
-        field: "states",
-        direction: "asc"
-      },
-      {
-        field: "title",
-        direction: "asc"
-      }
-    ]
-  },
-  {
-    name: "Heritage Site -> State -> Title",
-    value: [
-      {
-        field: "world_heritage_site",
-        direction: "asc"
-      },
-      {
-        field: "states",
-        direction: "asc"
-      },
-      {
-        field: "title",
-        direction: "asc"
+        field: "retweet_count",
+        direction: "desc"
       }
     ]
   }
@@ -218,9 +149,9 @@ export default function App() {
                       autocompleteMinimumCharacters={3}
                       autocompleteResults={{
                         linkTarget: "_blank",
-                        sectionTitle: "Results",
-                        titleField: "title",
-                        urlField: "nps_link",
+                        sectionTitle: "",
+                        titleField: "",
+                        urlField: "url",
                         shouldTrackClickThrough: true,
                         clickThroughTags: ["test"]
                       }}
@@ -234,43 +165,17 @@ export default function App() {
                         <Sorting label={"Sort by"} sortOptions={SORT_OPTIONS} />
                       )}
                       <Facet
-                        field={"states"}
-                        label="States"
-                        filterType="any"
-                        isFilterable={true}
-                      />
-                      <Facet
-                        field={"world_heritage_site"}
-                        label="World Heritage Site"
-                        view={BooleanFacet}
-                      />
-                      <Facet
-                        field="visitors"
-                        label="Visitors"
-                        view={SingleLinksFacet}
-                      />
-                      <Facet
-                        field="date_established"
-                        label="Date Established"
+                        field="created_at"
+                        label="Date Created"
                         filterType="any"
                       />
-                      <Facet
-                        field="location"
-                        label="Distance"
-                        filterType="any"
-                      />
-                      <Facet
-                        field="acres"
-                        label="Acres"
-                        view={SingleSelectFacet}
-                      />
+                      <Facet field="index" label="Label" filterType="any" />
                     </div>
                   }
                   bodyContent={
                     <Results
-                      titleField="title"
-                      urlField="nps_link"
-                      thumbnailField="image_url"
+                      titleField="text"
+                      urlField="url"
                       shouldTrackClickThrough={true}
                     />
                   }
